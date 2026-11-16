@@ -23,6 +23,12 @@
 #define _RWNX_COMPAT_H_
 #include <linux/version.h>
 
+#if defined(__has_include)
+#if __has_include(<generated/utsrelease.h>)
+#include <generated/utsrelease.h>
+#endif
+#endif
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
 #error "Minimum kernel version supported is 3.10"
 #endif
@@ -37,6 +43,23 @@
 #endif
 
 /* CFG80211 */
+
+/*
+ * Upstream Linux added the net_device argument to
+ * cfg80211_ops::set_monitor_channel in v6.13. Ubuntu backported the same API
+ * change to its 6.8 kernel starting with ABI 147 without changing
+ * LINUX_VERSION_CODE, so checking only the upstream kernel version is not
+ * sufficient. The change also reached the 6.12 stable series in 6.12.101.
+ */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)) || \
+    (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 101) && \
+     LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)) || \
+    (defined(UTS_UBUNTU_RELEASE_ABI) && \
+     LINUX_VERSION_CODE == KERNEL_VERSION(6, 8, 0) && \
+     UTS_UBUNTU_RELEASE_ABI >= 147)
+#define RWNX_SET_MONITOR_CHANNEL_HAS_NETDEV 1
+#endif
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
 #define IEEE80211_HE_MAC_CAP3_MAX_AMPDU_LEN_EXP_MASK IEEE80211_HE_MAC_CAP3_MAX_A_AMPDU_LEN_EXP_MASK
 #endif
