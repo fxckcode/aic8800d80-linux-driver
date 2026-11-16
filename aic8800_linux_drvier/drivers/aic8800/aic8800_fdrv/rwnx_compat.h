@@ -22,12 +22,7 @@
 #ifndef _RWNX_COMPAT_H_
 #define _RWNX_COMPAT_H_
 #include <linux/version.h>
-
-#if defined(__has_include)
-#if __has_include(<generated/utsrelease.h>)
 #include <generated/utsrelease.h>
-#endif
-#endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
 #error "Minimum kernel version supported is 3.10"
